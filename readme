@@ -1,3 +1,12 @@
+21 Days SQL Challenge by Indian Data Club and DPDzero
+Challenge Breakdown:
+
+Duration: 21 days
+Focus: SQL fundamentals to advanced (queries, joins, subqueries, window functions, CTEs, optimization, modeling, and analytics)
+Dataset: Real Hospital Dataset
+Goal: To equip with strong SQL skills to query, clean, model, and analyse data — essential for roles in **Data Analysis**
+
+
 -- Day 1:
 -- Question: List all unique hospital services available in the hospital.
 select distinct(service) from services_weekly
