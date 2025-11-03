@@ -1,0 +1,3 @@
+-- Day 1:
+-- Question: List all unique hospital services available in the hospital.
+select distinct(service) from services_weekly
