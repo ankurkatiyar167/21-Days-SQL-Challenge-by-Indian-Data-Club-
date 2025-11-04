@@ -9,4 +9,12 @@ Goal: To equip with strong SQL skills to query, clean, model, and analyse data â
 
 -- Day 1:
 -- Question: List all unique hospital services available in the hospital.
-select distinct(service) from services_weekly
+select distinct(service) from services_weekly;
+
+
+-- Day 2:
+-- Question: Find all patients admitted to 'Surgery' service with a satisfaction score below 70, showing their patient_id, name, age, and satisfaction score.
+Hereâ€™s the query I used:
+
+select patient_id,name,age, satisfaction from patients 
+where service="Surgery" and satisfaction <70;
