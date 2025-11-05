@@ -18,3 +18,9 @@ Here’s the query I used:
 
 select patient_id,name,age, satisfaction from patients 
 where service="Surgery" and satisfaction <70;
+
+-- Day 3:
+-- Question: Retrieve the top 5 weeks with the highest patient refusals across all services, showing week, service, patients_refused, and patients_request. Sort by patients_refused in descending order.
+Here’s the query I used:
+select week,service,patients_refused,patients_request from services_weekly 
+order by patients_refused desc Limit 5;
