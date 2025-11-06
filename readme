@@ -26,3 +26,10 @@ Here’s the query I used:
 
 select week,service,patients_refused,patients_request from services_weekly 
 order by patients_refused desc Limit 5;
+
+-- Day 4:
+-- Question:Find the 3rd to 7th highest patient satisfaction scores from the patients table,showing patient_id, name, service, and satisfaction. Display only these 5 records.
+Here’s the query I used:
+
+select patient_id,name,service,satisfaction from patients 
+order by satisfaction desc limit 5 offset 2
