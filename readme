@@ -43,3 +43,27 @@ SUM(patients_admitted) AS total_number_of_patients_admitted,
 SUM(patients_refused) AS total_patients_refused,
 ROUND(AVG(patient_satisfaction), 2) AS average_patient_satisfaction
 FROM services_weekly;
+
+
+-- Day 6:
+-- Question:For each hospital service, calculate the total number of patients admitted, total patients refused, and the admission rate (percentage of requests that were admitted). Order by admission rate descending.
+
+select service,sum(patients_admitted) as total_admissions, 
+sum(patients_refused) as total_refusal,
+round((sum(patients_admitted)/(sum(patients_admitted)+sum(patients_refused)))*100,2) as admission_rate_pct
+from services_weekly
+group by service
+order by admission_rate_pct desc;
+
+
+-- Day 7:
+-- Question: Identify services that refused more than 100 patients in total and had an average patient satisfaction below 80. 
+-- Show service name, total refused, and average satisfaction. 
+
+select service as service_name,sum(patients_refused) as total_refused,
+avg(patient_satisfaction) as average_satisfaction
+ from services_weekly
+ group by service 
+ having total_refused >100 and 
+average_satisfaction< 80
+ 
