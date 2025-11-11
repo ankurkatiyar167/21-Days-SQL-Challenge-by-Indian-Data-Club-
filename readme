@@ -66,4 +66,16 @@ avg(patient_satisfaction) as average_satisfaction
  group by service 
  having total_refused >100 and 
 average_satisfaction< 80
+
+
+ -- Day 8:
+ -- Question: Create a patient summary that shows patient_id, full name in uppercase, service in lowercase, age category (if age >= 65 then 'Senior', if age >= 18 then 
+ -- 'Adult', else 'Minor'), and name length.Only show patients whose name length is greater than 10 characters.
+ 
+ select patient_id,upper(name) as Name, lower(service) as Service,
+ case When age>=65 then "Senior" 
+ when age>=18 then "Adult" 
+ else "Minor" 
+ end as age_category 
+ from patients where length(name)>10
  
