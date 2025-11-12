@@ -79,3 +79,11 @@ average_satisfaction< 80
  end as age_category 
  from patients where length(name)>10
  
+
+ -- Day 9:
+ -- Question: Calculate the average length of stay (in days) for each service, showing only  services where the average stay is more than 7 days. Also show the count of patients
+and order by average stay descending.
+
+ select service,count(patient_id) as count_of_patients,
+ round(avg(datediff(departure_date,arrival_date)),2) as Stay
+ from patients group by service having stay >7 order by stay desc
