@@ -87,3 +87,15 @@ and order by average stay descending.
  select service,count(patient_id) as count_of_patients,
  round(avg(datediff(departure_date,arrival_date)),2) as Stay
  from patients group by service having stay >7 order by stay desc
+
+-- Day 10:
+-- Question: Create a service performance report showing service name, total patients  admitted, and a performance category based on the following: 'Excellent' if avg 
+-- satisfaction >= 85, 'Good' if >= 75, 'Fair' if >= 65, otherwise 'Needs Improvement'. Order by average satisfaction descending.
+
+select service,sum(patients_admitted) as total_patients,
+case when avg(patient_satisfaction) >=85 then "Excellent"
+when avg(patient_satisfaction)>=75 then "Good" 
+When avg(patient_satisfaction)<65 then "Fair"
+else "Needs Improvement" 
+End as performance from services_weekly
+group by service order by avg(patient_satisfaction) desc;
