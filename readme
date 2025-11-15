@@ -108,3 +108,20 @@ group by service order by avg(patient_satisfaction) desc;
 select service,event,count(*) as cnt from services_weekly
 where event is not null and event !="none"
 group by service,event order by cnt desc;
+
+
+/* Day 12 - Analyze the event impact by comparing weeks with events vs weeks without events.
+   Show: event status ('With Event' or 'No Event'), count of weeks, average patient satisfaction, and
+   average staff morale. Order by average patient satisfaction descending. */
+
+SELECT
+    CASE
+        WHEN event IS NOT NULL AND event <> 'none' THEN 'With Event'
+        ELSE 'No Event'
+    END AS `Event Status`,
+    COUNT(*) AS `Week Count`,
+    ROUND(AVG(patient_satisfaction), 2) AS `Avg Patient Satisfaction`,
+    ROUND(AVG(staff_morale), 2) AS `Avg Staff Morale`
+FROM services_weekly
+GROUP BY `Event Status`
+ORDER BY `Avg Patient Satisfaction` DESC;
