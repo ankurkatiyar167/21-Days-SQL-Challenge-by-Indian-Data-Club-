@@ -10,6 +10,7 @@ Goal: To equip with strong SQL skills to query, clean, model, and analyse data �
 -- Day 1:
 -- Question: List all unique hospital services available in the hospital.
 
+🔍 Query Used :
 select distinct(service) from services_weekly;
 
 
@@ -48,6 +49,7 @@ FROM services_weekly;
 -- Day 6:
 -- Question:For each hospital service, calculate the total number of patients admitted, total patients refused, and the admission rate (percentage of requests that were admitted). Order by admission rate descending.
 
+🔍 Query Used :
 select service,sum(patients_admitted) as total_admissions, 
 sum(patients_refused) as total_refusal,
 round((sum(patients_admitted)/(sum(patients_admitted)+sum(patients_refused)))*100,2) as admission_rate_pct
@@ -60,6 +62,7 @@ order by admission_rate_pct desc;
 -- Question: Identify services that refused more than 100 patients in total and had an average patient satisfaction below 80. 
 -- Show service name, total refused, and average satisfaction. 
 
+🔍 Query Used :
 select service as service_name,sum(patients_refused) as total_refused,
 avg(patient_satisfaction) as average_satisfaction
  from services_weekly
@@ -72,6 +75,7 @@ average_satisfaction< 80
  -- Question: Create a patient summary that shows patient_id, full name in uppercase, service in lowercase, age category (if age >= 65 then 'Senior', if age >= 18 then 
  -- 'Adult', else 'Minor'), and name length.Only show patients whose name length is greater than 10 characters.
  
+🔍 Query Used :
  select patient_id,upper(name) as Name, lower(service) as Service,
  case When age>=65 then "Senior" 
  when age>=18 then "Adult" 
@@ -84,6 +88,7 @@ average_satisfaction< 80
  -- Question: Calculate the average length of stay (in days) for each service, showing only  services where the average stay is more than 7 days. Also show the count of patients
 and order by average stay descending.
 
+🔍 Query Used :
  select service,count(patient_id) as count_of_patients,
  round(avg(datediff(departure_date,arrival_date)),2) as Stay
  from patients group by service having stay >7 order by stay desc
@@ -92,6 +97,7 @@ and order by average stay descending.
 -- Question: Create a service performance report showing service name, total patients  admitted, and a performance category based on the following: 'Excellent' if avg 
 -- satisfaction >= 85, 'Good' if >= 75, 'Fair' if >= 65, otherwise 'Needs Improvement'. Order by average satisfaction descending.
 
+🔍 Query Used :
 select service,sum(patients_admitted) as total_patients,
 case when avg(patient_satisfaction) >=85 then "Excellent"
 when avg(patient_satisfaction)>=75 then "Good" 
@@ -105,6 +111,7 @@ group by service order by avg(patient_satisfaction) desc;
 -- Question: Find all unique combinations of service and event type from the services_weekly table where events are not null or none, along with the count of occurrences for each 
 -- combination. Order by count descending.
 
+🔍 Query Used :
 select service,event,count(*) as cnt from services_weekly
 where event is not null and event !="none"
 group by service,event order by cnt desc;
@@ -114,6 +121,7 @@ group by service,event order by cnt desc;
    Show: event status ('With Event' or 'No Event'), count of weeks, average patient satisfaction, and
    average staff morale. Order by average patient satisfaction descending. */
 
+🔍 Query Used :
 SELECT
     CASE
         WHEN event IS NOT NULL AND event <> 'none' THEN 'With Event'
@@ -130,7 +138,7 @@ ORDER BY `Avg Patient Satisfaction` DESC;
 -- 📘 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏: Create a comprehensive report showing patient_id, patient name, age, service, and the total number of staff members available in their service. 
 -- Only include patients from services that have more than 5 staff members. Order by number of staff descending, then by patient name.
 
-𝑸𝒖𝒆𝒓𝒚 :
+🔍 Query Used :
 SELECT 
  p.patient_id,p.name,p.age,p.service,COUNT(s.staff_id) AS count_of_staff
 FROM patients AS p JOIN staff AS s 
@@ -143,6 +151,7 @@ ORDER BY count_of_staff DESC, p.name;
 Question: Create a staff utilisation report showing all staff members (staff_id, staff_name, role, service) and the count of weeks they were present (from staff_schedule).
 Include staff members even if they have no schedule records. Order by weeks present descending.
 
+🔍 Query Used :
 select 
     s.staff_id, s.staff_name,
     s.role, s.service,
@@ -159,6 +168,7 @@ order by weeks_present desc;
 Question: Create a comprehensive service analysis report for week 20 showing: service name, total patients admitted that week, total patients refused, average patient satisfaction, 
 count of staff assigned to service, and count of staff present that week. Order by patients admitted descending.
 
+🔍 Query Used :
 select s.service,s.patients_admitted as total_patients_admitted,
 patients_refused as total_patients_refused,
 round(avg(s.patient_satisfaction),2) as avg_patients_satisfaction,
@@ -168,10 +178,12 @@ sum(case when st.present=1 then 1 else 0 end) as total_staff_present
   join staff_schedule st on s.service=st.service and s.week=st.week
   where s.week=20 
   group by s.service,s.week
+
 -- Day 16
 Question: Find all patients who were admitted to services that had at least one week where patients were refused AND the average patient satisfaction for that service was below the overall 
 hospital average satisfaction. Show patient_id, name, service, and their personal satisfaction score.
 
+🔍 Query Used :
 SELECT patient_id, name, service, satisfaction
 FROM patients
 WHERE service IN (
@@ -188,3 +200,141 @@ AND service IN (
     );
 
 
+-- Day 17
+Question: Create a report showing each service with: service name, total patients admitted, the difference between their total admissions and the average admissions across all services, 
+and a rank indicator ('Above Average', 'Average', 'Below Average'). Order by total patients admitted descending.
+
+🔍 Query Used :
+SELECT 
+    s.service AS service_name,
+    s.total_patients AS total_patients_admitted,
+    ROUND(s.total_patients - avg_table.avg_patients, 2) 
+        AS difference_between_total_and_avg,
+    CASE 
+        WHEN s.total_patients > avg_table.avg_patients THEN 'Above Average'
+        WHEN s.total_patients = avg_table.avg_patients THEN 'Average'
+        ELSE 'Below Average'
+    END AS rank_indicator
+FROM (
+    SELECT 
+        service,
+        SUM(patients_admitted) AS total_patients
+    FROM services_weekly
+    GROUP BY service
+) AS s,
+(
+    SELECT 
+        AVG(total_patients) AS avg_patients
+    FROM (
+        SELECT 
+            SUM(patients_admitted) AS total_patients
+        FROM services_weekly
+        GROUP BY service
+    ) AS inner_avg
+) AS avg_table
+ORDER BY s.total_patients DESC;
+
+-- Day 18
+Question: Create a comprehensive personnel and patient list showing: identifier (patient_id or staff_id), full name, type ('Patient' or 'Staff'), and associated service. 
+Include only those in 'surgery' or 'emergency' services. Order by type, then service, then name.
+
+🔍 Query Used :
+WITH c1 AS (
+    SELECT 
+        patient_id AS patient_id_or_staff_id,
+        name,
+        service
+    FROM patients
+    WHERE service IN ('surgery', 'emergency')
+
+    UNION ALL
+
+    SELECT 
+        staff_id,
+        staff_name,
+        service
+    FROM staff
+    WHERE service IN ('surgery', 'emergency')
+)
+
+SELECT *,
+       CASE 
+           WHEN SUBSTRING(patient_id_or_staff_id, 1, 3) = 'PAT'
+           THEN 'Patient'
+           ELSE 'Staff'
+       END AS type
+FROM c1
+ORDER BY type, service, name;
+
+
+-- Day 19
+Question: For each service, rank the weeks by patient satisfaction score (highest first). Show service, week, patient_satisfaction, patients_admitted, and the rank. 
+Include only the top 3 weeks per service.
+
+🔍 Query Used :
+SELECT service, week,patient_satisfaction,patients_admitted, week_rank
+FROM(SELECT 
+ service, week,patient_satisfaction,patients_admitted, 
+ RANK() OVER (PARTITION BY service ORDER BY patient_satisfaction DESC,week) as week_rank
+FROM services_weekly sw
+) A WHERE week_rank<=3
+ORDER BY service, week_rank;
+
+
+-- Day 20
+Question: Create a trend analysis showing for each service and week: week number, patients_admitted, running total of patients admitted (cumulative), 
+3-week moving average of patient satisfaction (current week and 2 prior weeks), and the difference between current week admissions and the service average. Filter for weeks 10-20 only.
+
+🔍 Query Used :
+SELECT
+    service,
+    week,
+    patients_admitted,
+    SUM(patients_admitted) OVER (
+        PARTITION BY service
+        ORDER BY week
+    ) AS cumulative_admissions,
+    ROUND(
+        AVG(patient_satisfaction) OVER (
+            PARTITION BY service
+            ORDER BY week
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ),
+        2
+    ) AS moving_avg_3week,
+    patients_admitted
+      - AVG(patients_admitted) OVER (PARTITION BY service) AS diff_from_avg
+FROM services_weekly
+WHERE week BETWEEN 10 AND 20
+ORDER BY service, week;
+
+
+
+-- Day 21
+ Question: Create a comprehensive hospital performance dashboard using CTEs. Calculate: 1) Service-level metrics,2) Staff metrics per service,3) Patient demographics per service. Then combine all three CTEs to create a final report
+showing service name, all calculated metrics, and an overall performance score (weighted average of admission rate and satisfaction). Order by performance score descending.
+
+🔍 Query Used :
+WITH service_metrics AS (
+SELECT service,SUM(patients_admitted) AS total_admissions, SUM(patients_refused) AS total_refusals,AVG(patient_satisfaction) AS avg_satisfaction
+FROM services_weekly
+GROUP BY service
+),
+staff_metrics AS (
+SELECT service,COUNT(*) AS total_staff,SUM(present) AS staff_weeks_present
+FROM staff_schedule
+GROUP BY service
+),
+patient_metrics AS (
+SELECT service,COUNT(*) AS patient_count,AVG(age) AS avg_age
+FROM patients
+GROUP BY service
+)
+SELECT 
+s.service,s.total_admissions,s.total_refusals,s.avg_satisfaction,sm.total_staff,
+sm.staff_weeks_present,pm.patient_count,pm.avg_age,
+ROUND((s.total_admissions * 0.6) + (s.avg_satisfaction * 0.4), 2) AS performance_score
+FROM service_metrics s
+LEFT JOIN staff_metrics sm ON s.service = sm.service
+LEFT JOIN patient_metrics pm ON s.service = pm.service
+ORDER BY performance_score DESC; 
